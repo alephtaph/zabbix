@@ -1,0 +1,302 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 36bff6c29af64692839d077febfc7079
+      name: 'Templates/Network devices'
+  templates:
+    - uuid: 9096add61063467380e94dc9f1ca250c
+      template: zbx-template-smart-me
+      name: zbx-template-smart-me
+      description: |
+        To monitor Smart-Me https://web.smart-me.com
+        
+        Enter the values for the following macros:
+        {$SMARTME_USER} -> The user account you access the web application
+        {$SMARTME_PASS} -> The password you access the web application
+        {$SMARTME_SERIAL} -> The serial number of your device
+      groups:
+        - name: 'Templates/Network devices'
+      items:
+        - uuid: 5ac6c5fb3f334d4da640308c688d2201
+          name: 'Active Power'
+          type: DEPENDENT
+          key: active_power
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          units: kW
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.ActivePower
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Power
+            - tag: Application
+              value: System
+        - uuid: e99749d84a924995b1694fd9b4e6876d
+          name: 'Current L1'
+          type: DEPENDENT
+          key: current_l1
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          units: A
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.CurrentL1
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Current
+            - tag: Application
+              value: System
+        - uuid: 547b59ebb0c04caf8490b3aaee6bbf96
+          name: 'Current L2'
+          type: DEPENDENT
+          key: current_l2
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          units: A
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.CurrentL2
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Current
+            - tag: Application
+              value: System
+        - uuid: 0da85832ccd54482aaea98e91c172525
+          name: 'Current L3'
+          type: DEPENDENT
+          key: current_l3
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          units: A
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.CurrentL3
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Current
+            - tag: Application
+              value: System
+        - uuid: e8ffbd7ae9744d7abb09309e40d796c2
+          name: 'Data collector - HTTP'
+          type: HTTP_AGENT
+          key: 'http.get[https://smart-me.com:443/api/DeviceBySerial?serial={$SMARTME_SERIAL},{$SMARTME_USER},{$SMARTME_PASS}]'
+          delay: '30'
+          history: 1h
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$SMARTME_USER}'
+          password: '{$SMARTME_PASS}'
+          description: 'Collect data from SMARTME device status API.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.body
+          url: 'https://smart-me.com:443/api/DeviceBySerial'
+          query_fields:
+            - name: serial
+              value: '{$SMARTME_SERIAL}'
+          output_format: JSON
+          tags:
+            - tag: Application
+              value: 'Data collection'
+        - uuid: 87a3a930916445adb4556efb606451f3
+          name: Name
+          type: DEPENDENT
+          key: name
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Name
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 88ecfafdcd3b40cc9fc330242b8d616b
+          name: Serial
+          type: DEPENDENT
+          key: serial
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Serial
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: System
+        - uuid: e50b9737adf243538b536554a9d24861
+          name: 'Status data'
+          type: DEPENDENT
+          key: status
+          delay: '0'
+          history: 1h
+          trends: '0'
+          value_type: TEXT
+          description: 'Collect data from HTTP data collector items.'
+          master_item:
+            key: 'http.get[https://smart-me.com:443/api/DeviceBySerial?serial={$SMARTME_SERIAL},{$SMARTME_USER},{$SMARTME_PASS}]'
+          tags:
+            - tag: Application
+              value: 'Data collection'
+        - uuid: b3fb61a66edb45a1a29d8f3c975fc508
+          name: 'Total Reading'
+          type: DEPENDENT
+          key: total_reading
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          units: kW
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.CounterReading
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Power
+            - tag: Application
+              value: System
+        - uuid: cd4e591cf9ae47e2a4d4f38915485623
+          name: 'Total Reading Tarif 1'
+          type: DEPENDENT
+          key: total_reading-t1
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          units: kWh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.CounterReadingT1
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Power
+            - tag: Application
+              value: System
+        - uuid: 4e19e662b7e246a0a1663f305b0740ad
+          name: 'Total Reading Tarif 2'
+          type: DEPENDENT
+          key: total_reading-t2
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          units: kWh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.CounterReadingT2
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Power
+            - tag: Application
+              value: System
+        - uuid: 32396b5ed1ae449a8bc89c117602b7be
+          name: 'Volt L1'
+          type: DEPENDENT
+          key: volt_l1
+          delay: '0'
+          history: 1w
+          units: V
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.VoltageL1
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Current
+            - tag: Application
+              value: System
+        - uuid: e3d251eea6114283a921a52a85fe3839
+          name: 'Volt L2'
+          type: DEPENDENT
+          key: volt_l2
+          delay: '0'
+          history: 1w
+          units: V
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.VoltageL2
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Current
+            - tag: Application
+              value: System
+        - uuid: bf3dec0375994d8388a946ea6cd57e89
+          name: 'Volt L3'
+          type: DEPENDENT
+          key: volt_l3
+          delay: '0'
+          history: 1w
+          units: V
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.VoltageL3
+          master_item:
+            key: status
+          tags:
+            - tag: Application
+              value: Current
+            - tag: Application
+              value: System
+      macros:
+        - macro: '{$SMARTME_PASS}'
+        - macro: '{$SMARTME_SERIAL}'
+          description: 'Serial number of the device'
+        - macro: '{$SMARTME_USER}'
+  graphs:
+    - uuid: 4640d131412741bbb2a14db18b967447
+      name: 'Current Usage'
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: zbx-template-smart-me
+            key: current_l1
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: zbx-template-smart-me
+            key: current_l2
+        - sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: zbx-template-smart-me
+            key: current_l3
