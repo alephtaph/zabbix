@@ -1,6 +1,6 @@
 # Smart-me template
 
-The following marcos need to be entered:
-  {$SMARTME_USER}
-  {$SMARTME_PASS}
-  {$SMARTME_SERIAL}
+The following marcos need to be entered: <br>
+  {$SMARTME_USER} <br>
+  {$SMARTME_PASS} <br>
+  {$SMARTME_SERIAL} <br>
