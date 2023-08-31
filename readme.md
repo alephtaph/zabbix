@@ -1,1 +1,1 @@
-# Collection of my own Zabbix templates
+Collection of my own Zabbix templates
